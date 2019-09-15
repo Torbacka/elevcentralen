@@ -1,15 +1,17 @@
-import os
+import json
 
 import requests
 from bs4 import BeautifulSoup
 
-username = os.environ['USERNAME']
-password = os.environ['PASSWORD']
 base_url = 'https://elevcentralen.se/'
 sessions = []
 
 
-def authenticate():
+def authenticate(username, password):
+    """
+    Authenticate the user against all schools.
+    return boolean if users successful authenticated against elevcentralen.
+    """
     form = {
         '__RequestVerificationToken': 'ReJ0QP3-X_b_VV4wdw3_bEPUowzLB5up31e2KNB7b7ES2GRVgUWb83piECkKq8-6FDGBdz_6fq7meRvLzjNvLnGtVXs1',
         'Username': username,
@@ -34,5 +36,29 @@ def authenticate():
                 'session': session
             })
 
+
+def get_all_bookings():
+    """
+    Get all bookings for all active schools.
+    :return: all bookings.
+    """
+    bookings = []
+    for session in sessions:
+        response = session['session'].get(f"{base_url}/Booking/Home/CurrentBookings")
+        bookings_data = json.loads(response.text)
+        for item in bookings_data['items']:
+            bookings.append({
+                'title': item['title'],
+                'length': item['length'],
+                'employees': item['employees'],
+                'start': item['start'],
+                'end': item['end'],
+                'cancellationTime': item['lateCancellationTime'],
+                'log': item['log']
+            })
+    return bookings
+
+
 if __name__ == '__main__':
-    authenticate()
+    bookings_test = get_all_bookings()
+    print(bookings_test)

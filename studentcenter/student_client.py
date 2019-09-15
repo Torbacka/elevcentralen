@@ -1,6 +1,7 @@
 import os
 
 import requests
+from bs4 import BeautifulSoup
 
 username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
@@ -20,8 +21,18 @@ def authenticate():
         'Cookie': '__RequestVerificationToken=Snv90NLwWnHNVKSk2tNHSi43jK4zAjKW9tSyCdCATrE1Jou8VZ8bSO6ttaazW4-HJIra2T8HYlaCSacO87zynVr6wHY1'
     }
     response = requests.post(url=f"{base_url}/sv/Login/Authenticate", headers=headers, data=form)
-
-
+    parser = BeautifulSoup(response.content, 'html.parser')
+    buttons = parser.findAll('button')
+    for button in buttons:
+        session = requests.Session()
+        form['CustomerNumber'] = button['data-customer-number']
+        session.post(url=f"{base_url}/sv/Login/Authenticate", headers=headers, data=form)
+        if '.SCFORMSAUTH' in session.cookies:
+            sessions.append({
+                'id': button['data-customer-number'],
+                'name': button.text.strip(),
+                'session': session
+            })
 
 if __name__ == '__main__':
     authenticate()

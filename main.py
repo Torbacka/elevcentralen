@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_httpauth import HTTPBasicAuth
 
 from studentcenter import student_client
@@ -15,7 +15,7 @@ def verify_password(username, password):
 @app.route('/bookings', methods=['GET'])
 @auth.login_required
 def get_all_bookings():
-    return student_client.get_all_bookings()
+    return jsonify(student_client.get_all_bookings())
 
 
 if __name__ == '__main__':

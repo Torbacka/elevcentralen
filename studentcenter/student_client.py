@@ -12,6 +12,7 @@ def authenticate(username, password):
     Authenticate the user against all schools.
     return boolean if users successful authenticated against elevcentralen.
     """
+    sessions.clear()
     form = {
         '__RequestVerificationToken': 'ReJ0QP3-X_b_VV4wdw3_bEPUowzLB5up31e2KNB7b7ES2GRVgUWb83piECkKq8-6FDGBdz_6fq7meRvLzjNvLnGtVXs1',
         'Username': username,
@@ -35,6 +36,7 @@ def authenticate(username, password):
                 'name': button.text.strip(),
                 'session': session
             })
+    return len(sessions) != 0
 
 
 def get_all_bookings():

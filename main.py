@@ -1,16 +1,21 @@
 from flask import Flask
+from flask_httpauth import HTTPBasicAuth
+
+from studentcenter import student_client
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
 
 
-def get():
-    print("hej")
+@auth.verify_password
+def verify_password(username, password):
+    return student_client.authenticate(username, password)
 
 
-@app.route('/', methods=['GET'])
-def local_get():
-    get()
-    return ''
+@app.route('/bookings', methods=['GET'])
+@auth.login_required
+def get_all_bookings():
+    return student_client.get_all_bookings()
 
 
 if __name__ == '__main__':

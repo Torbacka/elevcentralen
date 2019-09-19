@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
@@ -54,6 +55,7 @@ def get_all_bookings():
         bookings_data = json.loads(response.text)
         for item in bookings_data['items']:
             bookings.append({
+                'booked': item['timeslotResourceTypeStatus'] == 'Allocated',
                 'title': item['title'],
                 'length': item['length'],
                 'employees': item['employees'],
@@ -70,12 +72,15 @@ def get_available_bookings():
     Get all available bookings from all active schools.
     :return: all available bookings
     """
-
+    bookings = []
     for session in sessions:
         teacher_response = session['session'].get("https://elevcentralen.se/en/Booking")
         parser = BeautifulSoup(teacher_response.content, 'html.parser')
         teachers_div = parser.find("div", {"class": "list-group teachers"})
         teachers_labels = teachers_div.findAll("label")
+        now = datetime.utcnow()
+        end = now + timedelta(days=40)
+
         for label in teachers_labels:
             data = {
                 "Source": "StudentCentral",
@@ -83,8 +88,8 @@ def get_available_bookings():
                     "id": 8160381
                 },
                 "EducationTypeId": 3,
-                "Start": "2019-09-15T22:00:00.000Z",
-                "End": "2019-10-20T22:00:00.000Z",
+                "Start": now.isoformat(),
+                "End": end.isoformat(),
                 "SelectedView": "Free",
                 "ShowInListView": False,
                 "TeacherIDs": [
@@ -92,7 +97,21 @@ def get_available_bookings():
                 ]
             }
             booking_response = session['session'].post(url="https://elevcentralen.se/Booking/Home/Data", data=data, headers=default_headers)
-            print(booking_response)
+            bookings_data = json.loads(booking_response.text)
+            for item in bookings_data['items']:
+                if item['timeslotResourceTypeStatus'] == 'Available':
+                    bookings.append({
+                        'booked': item['timeslotResourceTypeStatus'] == 'Allocated',
+                        'title': item['title'],
+                        'length': item['length'],
+                        'employees': item['employees'],
+                        'start': item['start'],
+                        'end': item['end'],
+                        'cancellationTime': item['lateCancellationTime'],
+                        'log': item['log']
+                    })
+            print(bookings)
+    return bookings
 
 
 password = os.environ['PASSWORD']

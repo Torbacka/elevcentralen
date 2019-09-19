@@ -14,8 +14,8 @@ def verify_password(username, password):
 
 @app.route('/bookings', methods=['GET'])
 @auth.login_required
-def get_all_bookings():
-    return jsonify(student_client.get_all_bookings())
+def get_available_bookings():
+    return jsonify(student_client.get_available_bookings())
 
 
 @app.route('/bookings/me', methods=['GET'])

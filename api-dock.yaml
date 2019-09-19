@@ -1,0 +1,100 @@
+openapi: 3.0.0
+info:
+  description: This is a REST-wrapper for elevcentralen.se. You need to authenticate with
+    basic auth to access this API.
+  version: 1.0.0
+  title: Swagger Petstore
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: daniel.torbacka@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: bookings
+    description: Operations about bookings
+paths:
+  /bookings:
+    get:
+      tags:
+        - bookings
+      summary: Get all bookings from all active schools.
+      description: ""
+      operationId: getBookings
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+        "403":
+          description: Unauthorized access
+        "429":
+          description: Too many request. Please slow down.
+security:
+  - basicAuth: []
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://studentcenter.swagger.io/v2
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    Booking:
+      type: object
+      properties:
+        cancellationTime:
+          type: string
+          format: date-time
+        employees:
+          type: array
+          items:
+            $ref: "#/components/schemas/Employer"
+        end:
+          type: string
+          format: date-time
+        length:
+          type: integer
+          format: int32
+        log:
+          type: array
+          items:
+            type: string
+        start:
+          type: string
+          format: date-time
+        title:
+          type: string
+    Employer:
+      type: object
+      properties:
+        action:
+          type: string
+        id:
+          type: integer
+          format: int64
+        imageUrl:
+          type: string
+        name:
+          type: string
+        signature:
+          type: string
+        type:
+          type: string
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string

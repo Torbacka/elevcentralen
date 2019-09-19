@@ -18,5 +18,11 @@ def get_all_bookings():
     return jsonify(student_client.get_all_bookings())
 
 
+@app.route('/bookings/me', methods=['GET'])
+@auth.login_required
+def get_all_bookings():
+    return jsonify(student_client.get_all_bookings())
+
+
 if __name__ == '__main__':
     app.run('127.0.0.1', port=8087, debug=True)

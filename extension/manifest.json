@@ -1,0 +1,20 @@
+{
+
+  "manifest_version": 2,
+  "name": "Elevcentralen",
+  "version": "1.0",
+
+  "description": "Makes it easier to book lessons.",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://elevcentralen.se/*/Booking"],
+      "js": ["calendar.js"]
+    }
+  ]
+
+}

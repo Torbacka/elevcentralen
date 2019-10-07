@@ -1,2 +1,7 @@
 document.body.style.border = "5px solid yellow";
-document.getElementsByClassName("list-group teachers")[0].getElementsByTagName("label"));
+const teachers = [...document.getElementsByClassName("list-group teachers")[0].getElementsByTagName("label")];
+
+
+teachers.forEach(label =>{
+    console.log(label.getAttribute("data-name"));
+});
